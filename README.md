@@ -85,11 +85,11 @@ Modify `config.json` to define your own rules and responses.
 }
 ```
 
-## 📖 Documentation
+<!-- ## 📖 Documentation
 
-For detailed usage, visit our [official documentation](https://docs.mocket.com).
+For detailed usage, visit our [official documentation](https://docs.mocket.com). -->
 
-## 🛠️ Contributing
+<!-- ## 🛠️ Contributing
 
 Contributions are welcome! Please follow these steps:
 
@@ -100,7 +100,7 @@ Contributions are welcome! Please follow these steps:
 
 ## 📝 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. -->
 
 ## 📬 Contact & Community
 
