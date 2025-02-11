@@ -1,95 +1,22 @@
 # Mocket - AI-Powered Mock API Platform
 
-<!-- ![Mocket Logo](https://www.mocket.com/logo.png)   -->
 *Mocket: Generate, Test, and Simulate APIs Effortlessly.*
 
 ## 🚀 Overview
 
-Mocket is an **AI-powered mock API platform** that helps developers eliminate backend dependencies, accelerate frontend development, and streamline API testing. It allows you to create dynamic APIs, simulate responses, and test different scenarios with ease.
+Mocket is an **AI-powered mock API platform** designed to help developers test and simulate APIs efficiently without relying on a fully developed backend. It eliminates backend dependency by providing an intuitive way to create dynamic APIs, automate responses, and streamline frontend development.
 
 ## 🔥 Key Features
 
-- **AI-Generated Mock APIs** – Instantly create realistic API endpoints.
-- **Conditional Response Generator** – Set rules for dynamic responses based on request parameters, headers, or body content.
-- **Advanced API Testing** – Simulate latency, inject failures, and test stress scenarios.
-- **Stateful Mocking (Planned)** – Persist API states across requests.
-- **Web Extension for API Interception (Planned)** – Modify API responses directly in the browser.
-- **Seamless Integration** – Works with REST, GraphQL, and WebSockets.
+- **AI-Generated Mock APIs** – Instantly create realistic API endpoints with minimal effort.
+- **Dynamic Responses** –  Generate dynamic responses based on types.
+- **Visual Workflow Builder** – Create complex logic for API responses using an intuitive, no-code workflow editor.
+- **Advanced API Testing** – Simulate latency, inject failures, and test real-world scenarios without modifying the backend.
+- **Stateful Mocking (Planned)** – Maintain request states for more accurate testing.
+- **Web Extension for API Interception (Planned)** – Modify API responses in real-time directly from the browser.
+- **Seamless Integration** – Works with REST, GraphQL, and WebSockets, making it a versatile tool for developers.
 
-## 📌 Installation
-
-### **1. Clone the Repository**
-
-```bash
- git clone https://github.com/anandukch/themocket.git
- cd themocket
-```
-
-### **2. Install Dependencies**
-
-```bash
- npm install   # For Node.js users
-```
-
-### **3. Run the Development Server**
-
-```bash
- npm run dev   # Starts the mock server
-```
-
-## ⚙️ Usage
-
-### **Creating a Mock API**
-
-Define your mock API via the UI or JSON config. Example JSON-based rule:
-
-```json
-{
-  "endpoint": "/user/:id",
-  "method": "GET",
-  "responses": [
-    {
-      "condition": { "param.id": "2" },
-      "response": { "name": "John Doe", "age": 30 }
-    },
-    {
-      "default": true,
-      "response": { "error": "User not found" }
-    }
-  ]
-}
-```
-
-### **Simulating Conditional Responses**
-
-- If `id == 2` → Returns user data.
-- If `body.name == "test"` → Returns specific response.
-- Else → Returns default response.
-
-### **Testing with Curl**
-
-```bash
-curl -X GET "http://localhost:3000/user/2"
-```
-
-## 🔧 Configuration
-
-Modify `config.json` to define your own rules and responses.
-
-```json
-{
-  "server": {
-    "port": 3000
-  },
-  "mockRules": [ ... ]
-}
-```
-
-<!-- ## 📖 Documentation
-
-For detailed usage, visit our [official documentation](https://docs.mocket.com). -->
-
-<!-- ## 🛠️ Contributing
+## 🛠️ Contributing
 
 Contributions are welcome! Please follow these steps:
 
@@ -100,12 +27,14 @@ Contributions are welcome! Please follow these steps:
 
 ## 📝 License
 
-This project is licensed under the MIT License. -->
+This project is licensed under the MIT License.
 
 ## 📬 Contact & Community
 
 <!-- - **Website:** [www.mocket.com](https://www.mocket.com) -->
 - **LinkedIn:** [Mocket](https://www.linkedin.com/company/themocket)
+<!-- - **Discord:** [Join Our Community](https://discord.gg/mocket) -->
 
 ---
+
 **Mocket** – Helping developers test APIs faster and smarter! 🚀
