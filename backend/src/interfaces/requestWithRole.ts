@@ -2,8 +2,8 @@ import { Request } from "express";
 
 export interface DataStoredInToken {
   userId: string;
-  email?: string;
-  username: string;
+  email: string;
+  // username: string;
   login: boolean;
 }
 
@@ -13,7 +13,11 @@ export interface TokenData {
 }
 
 export interface RequestWithInfo extends Request {
-  user?: {};
+  user?: {
+    userId: string;
+    email: string;
+    login: boolean;
+  };
   userId?: string;
   projectId?: string;
   subDomainId?: string;

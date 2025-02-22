@@ -1,8 +1,15 @@
 import { OAuth2Client, TokenPayload } from "google-auth-library";
 import UserService from "./user.service";
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } from "@/utils/variables";
+import {
+  ACCESS_EXPIRES,
+  ACCESS_SECRET,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GOOGLE_REDIRECT_URI,
+} from "@/utils/variables";
 import { isEmpty } from "class-validator";
 import ErrorHandler from "@/utils/error";
+import Token from "@/entities/token.entity";
 
 export default class AuthService {
   private oauth2Client: OAuth2Client;
@@ -54,5 +61,22 @@ export default class AuthService {
       throw new ErrorHandler(400, "You're not userData");
     }
     return this.userService.createGoogleUser(userPayload);
+  }
+
+  async generateAccessToken(email: string): Promise<string> {
+    const user = await this.userService.getUserByEmail(email);
+    if (!user) throw new ErrorHandler(404, "user not found");
+    const accessToken = new Token(
+      {
+        userId: user._id as string,
+        email: user.email,
+        login: true,
+      },
+      ACCESS_SECRET,
+      ACCESS_EXPIRES
+    ).sign();
+    console.log("accessToken", accessToken);
+    
+    return accessToken;
   }
 }

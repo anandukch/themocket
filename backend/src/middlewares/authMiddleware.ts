@@ -3,9 +3,9 @@ import { verify } from "jsonwebtoken";
 import { DataStoredInToken, RequestWithInfo } from "@/interfaces/requestWithRole";
 import ErrorHandler from "@/utils/error";
 import userModel from "@/models/user.model";
-import { SECRET_KEY } from "@/utils/variables";
+import { ACCESS_SECRET, REFRESH_SECRET, SECRET_KEY } from "@/utils/variables";
 
-const authMiddleware = (type: string) => {
+const authMiddleware = (type: "access" | "refresh") => {
   return async (req: RequestWithInfo, res: Response, next: NextFunction) => {
     try {
       const accessHeaders = req.header("Authorization")
@@ -13,15 +13,20 @@ const authMiddleware = (type: string) => {
         : null;
 
       const Authorization = type === "access" ? accessHeaders : req.cookies["refresh"];
+
       if (Authorization) {
         const verificationResponse = verify(
           Authorization,
-          type === "refresh" ? SECRET_KEY : (process.env.ACCESS_SECRET as string)
+          type === "refresh" ? REFRESH_SECRET : ACCESS_SECRET
         ) as unknown as DataStoredInToken;
 
         const findUser = await userModel.findById(verificationResponse.userId);
 
         if (findUser) {
+          console.log("type", type);
+          
+          console.log("findUser", findUser);
+          
           req.user = verificationResponse;
           next();
         } else {

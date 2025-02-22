@@ -10,6 +10,8 @@ const {
   GOOGLE_REDIRECT_URI = "",
   REFRESH_SECRET = "",
   REFRESH_EXPIRES = "",
+  ACCESS_SECRET = "",
+  ACCESS_EXPIRES = "",
 } = process.env;
 
 export {
@@ -24,4 +26,6 @@ export {
   GOOGLE_REDIRECT_URI,
   REFRESH_SECRET,
   REFRESH_EXPIRES,
+  ACCESS_SECRET,
+  ACCESS_EXPIRES,
 };

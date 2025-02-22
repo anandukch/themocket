@@ -21,8 +21,8 @@ export default class UserService {
     if (!userPayload) {
       throw new ErrorHandler(400, "You're not userData");
     }
-    let user: IUser | null = null;
-    if (!(await this.getUserByEmail(userPayload.email!))) {
+    let user: IUser | null = await this.getUserByEmail(userPayload.email!);
+    if (!user) {
       user = await this.userRepo.create({
         email: userPayload.email!,
         name: userPayload.name!,

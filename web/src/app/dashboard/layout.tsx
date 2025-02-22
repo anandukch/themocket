@@ -3,6 +3,7 @@ import MainArea from "@/components/Dashboard/Layouts/MainArea";
 import Navbar from "@/components/Dashboard/Layouts/Navbar";
 import SideStrip from "@/components/Dashboard/Layouts/SideStrip";
 import type { Metadata } from "next";
+import { Providers } from "../provider";
 
 export const metadata: Metadata = {
   title: "Mocket POC Dashboard",
@@ -15,13 +16,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="h-screen w-screen flex flex-row items-center justify-center">
-      <SideStrip />
-      <EndpointsStrip />
-      <section className="h-full w-full flex flex-col px-5 py-3">
-        <Navbar />
-        <MainArea>{children}</MainArea>
-      </section>
-    </main>
+    <Providers>
+      <main className="h-screen w-screen flex flex-row items-center justify-center">
+        <SideStrip />
+        <EndpointsStrip />
+        <section className="h-full w-full flex flex-col px-5 py-3">
+          <Navbar />
+          <MainArea>{children}</MainArea>
+        </section>
+      </main>
+    </Providers>
   );
 }

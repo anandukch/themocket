@@ -3,6 +3,7 @@ import Controller, { IRoute, Methods } from "./controller";
 import UserService from "@/services/user.service";
 import validationMiddleware from "@/middlewares/requestValidator";
 import { RequestWithInfo } from "@/interfaces/requestWithRole";
+import authMiddleware from "@/middlewares/authMiddleware";
 
 export default class UserController extends Controller {
   constructor(private service: UserService) {
@@ -12,12 +13,12 @@ export default class UserController extends Controller {
   routerMiddleWares = [];
 
   routes: IRoute[] = [
-    // {
-    //   path: "/",
-    //   method: Methods.GET,
-    //   handler: this.getAllUsers.bind(this),
-    //   localMiddleWares: [],
-    // },
+    {
+      path: "/me",
+      method: Methods.GET,
+      handler: this.getMe.bind(this),
+      localMiddleWares: [authMiddleware("access")],
+    },
     {
       path: "/:id",
       method: Methods.GET,
@@ -25,16 +26,9 @@ export default class UserController extends Controller {
       localMiddleWares: [],
     },
 
+    
   ];
 
-  // async getAllUsers(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     const users = await this.service.getUser();
-  //     res.status(200).json(users);
-  //   } catch (err) {
-  //     return next(err);
-  //   }
-  // }
   async getUser(req: Request, res: Response, next: NextFunction) {
     try {
       const userId = req.params.id;
@@ -46,5 +40,19 @@ export default class UserController extends Controller {
     }
   }
 
- 
+  async getMe(req: RequestWithInfo, res: Response, next: NextFunction) {
+    try {
+      console.log("user id", req.user?.userId);
+      
+      if (!req.user?.userId) {
+        throw new Error("User ID is missing");
+      }
+      const user = await this.service.getUserById(req.user.userId);
+      console.log("getme", user);
+      
+      res.status(200).json(user);
+    } catch (err) {
+      return next(err);
+    }
+  }
 }

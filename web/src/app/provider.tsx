@@ -1,10 +1,10 @@
 "use client";
-import EdgeTypesFlow from "@/components/Workflow/WorkflowBuilder";
+
 import { useUserContext } from "@/context/useContext";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
-export default function Home() {
+export function Providers({ children }: { children: React.ReactNode }) {
   const { authenticated, fetchUserDetails, userDetails, loading } =
     useUserContext();
 
@@ -14,14 +14,8 @@ export default function Home() {
 
   // if nort authenticaeted redirect to login
   if (loading) return <div>Loading...</div>;
-  if (authenticated) {
-    redirect("/dashboard");
-  } else {
+  if (!authenticated) {
     redirect("/auth");
   }
-  return (
-    <>
-      <EdgeTypesFlow />
-    </>
-  );
+  return <>{children}</>;
 }

@@ -1,6 +1,8 @@
 import express, { Application, ErrorRequestHandler, RequestHandler } from "express";
 import { Server as HttpServer } from "http";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+
 import Controller from "./controller/controller";
 import { connectDatabase } from "./db";
 import UserRepository from "./repositories/user.repository";
@@ -17,7 +19,8 @@ import ProjectRepository from "./repositories/project.repository";
 import ProjectService from "./services/project.service";
 import MocketService from "./services/mocket.service";
 import MocketController from "./controller/mocket.controller";
-
+import AuthController from "./controller/auth.controller";
+import AuthService from "./services/auth.service";
 
 export default class Server {
   public app: Application;
@@ -29,7 +32,7 @@ export default class Server {
   constructor(app: Application, port: number | string) {
     this.app = app;
     this.port = port;
-    this.env = NODE_ENV
+    this.env = NODE_ENV;
   }
 
   public start(): HttpServer {
@@ -37,7 +40,7 @@ export default class Server {
     return this.app.listen(this.port, () => {
       logger.info(`=================================`);
       logger.info(`======= ENV: ${this.env} =======`);
-      logger.info(`🚀 App listening on the port ${this.port}`);
+      logger.info(`🚀 App listening on the http://localhost:${this.port}`);
       logger.info(`=================================`);
     });
   }
@@ -77,27 +80,31 @@ export default class Server {
 export const StartServer = (app: Application, port: number | string) => {
   const server = new Server(app, port || 3000);
   // repository
-  
+
   const userRepository = new UserRepository();
   const mocketRepository = new MocketRepository();
   const projectRepository = new ProjectRepository();
   // service
   const projectService = new ProjectService(projectRepository);
   const userService = new UserService(userRepository);
+  const authService = new AuthService(userService);
   const mocketService = new MocketService(mocketRepository, userService, projectService);
 
   // controllers
   const controllers: Controller[] = [
+    new AuthController(authService),
     new UserController(userService),
     new ProjectController(projectService),
     new MocketController(mocketService),
   ];
   const globalMiddlewares: RequestHandler[] = [
     express.json(),
+    cookieParser(),
     express.urlencoded({ extended: true }),
     requestLogger,
     cors({
       origin: ["http://localhost:3000", "http://localhost:3001"],
+      credentials: true,
     }),
 
     // NODE_ENV ? vhost("*.*.*", app) : (_req, _res, next) => next(),

@@ -4,6 +4,9 @@ import { CookieOptions, NextFunction, Request, Response } from "express";
 import Token from "@/entities/token.entity";
 import { GoogleUserDto } from "@/dtos/user.dto";
 import { NODE_ENV, REFRESH_EXPIRES, REFRESH_SECRET } from "@/utils/variables";
+import { RequestWithInfo } from "@/interfaces/requestWithRole";
+import ErrorHandler from "@/utils/error";
+import authMiddleware from "@/middlewares/authMiddleware";
 
 export default class AuthController extends Controller {
   private cookieOptions: CookieOptions = {
@@ -30,7 +33,13 @@ export default class AuthController extends Controller {
     {
       path: "/google/callback",
       method: Methods.GET,
-      handler: this.redirectUrl.bind(this),
+      handler: this.callBackAuth.bind(this),
+    },
+    {
+      path: "/tokens",
+      method: Methods.GET,
+      handler: this.getAccessToken.bind(this),
+      localMiddleWares: [authMiddleware("refresh")],
     },
   ];
 
@@ -58,15 +67,26 @@ export default class AuthController extends Controller {
         },
 
         REFRESH_SECRET,
-        Number(REFRESH_EXPIRES)
+        REFRESH_EXPIRES
       ).sign();
+      console.log(refreshToken, this.cookieOptions);
+
       res.cookie("refresh", refreshToken, this.cookieOptions);
-      res.redirect("http://localhost:3000");
-      // const token = await this.authService.createToken(googleUser as User);
-      // res.status(200).json({ data: googleUser, message: "login" });
+      res.redirect("http://localhost:3000/dashboard");
     } catch (error) {
       console.log(error);
 
+      next(error);
+    }
+  }
+
+  async getAccessToken(req: RequestWithInfo, res: Response, next: NextFunction) {
+    try {
+      console.log(req.user);
+
+      const token = await this.authService.generateAccessToken(req.user?.email as string);
+      res.status(200).json({ data: token, message: "login" });
+    } catch (error) {
       next(error);
     }
   }
