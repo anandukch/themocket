@@ -11,6 +11,12 @@ import { errorHandler, Handler404 } from "./middlewares/errorHandler";
 import { logger } from "./utils/logger";
 import { NODE_ENV } from "./utils/variables";
 import UserController from "./controller/user.controller";
+import ProjectController from "./controller/project.controller";
+import MocketRepository from "./repositories/mocket.repository";
+import ProjectRepository from "./repositories/project.repository";
+import ProjectService from "./services/project.service";
+import MocketService from "./services/mocket.service";
+import MocketController from "./controller/mocket.controller";
 
 
 export default class Server {
@@ -73,12 +79,18 @@ export const StartServer = (app: Application, port: number | string) => {
   // repository
   
   const userRepository = new UserRepository();
-  
-  const userService = new UserService(userRepository );
+  const mocketRepository = new MocketRepository();
+  const projectRepository = new ProjectRepository();
+  // service
+  const projectService = new ProjectService(projectRepository);
+  const userService = new UserService(userRepository);
+  const mocketService = new MocketService(mocketRepository, userService, projectService);
 
   // controllers
   const controllers: Controller[] = [
-    new UserController(userService)
+    new UserController(userService),
+    new ProjectController(projectService),
+    new MocketController(mocketService),
   ];
   const globalMiddlewares: RequestHandler[] = [
     express.json(),
