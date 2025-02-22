@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #161529;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+*,
+:root {
+  box-sizing: border-box;
+}
+
+input,
+button {
+  all: unset;
+}
+input:focus,
+button:focus {
+  outline: 1px solid var(--foreground);
+}
+
+.dropdown > div[data-show="false"] {
+  animation: disappear 0.25s ease-in-out forwards;
+}
+.dropdown > div[data-show="true"] {
+  animation: appear 0.25s ease-in-out forwards;
+}
+.dropdownArrow > svg[data-show="true"] {
+  animation: rotate 0.25s ease-in-out forwards;
+}
+.dropdownArrow > svg[data-show="false"] {
+  animation: rotateBack 0.25s ease-in-out forwards;
+}
+.popup_animation {
+  animation: appear 0.25s ease-in-out forwards;
+}
+@keyframes appear {
+  0% {
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+@keyframes disappear {
+  0% {
+    opacity: 1;
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 0;
+    filter: blur(10px);
+  }
+}
+@keyframes rotateBack {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(180deg);
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
