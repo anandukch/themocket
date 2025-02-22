@@ -1,0 +1,7 @@
+.env
+node_modules/
+dist/
+serviceAccountKey.json
+testing/
+*.log
+data.json

@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  server:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src/:/mocket/src
+      - type: bind
+        source: .env
+        target: /mocket/.env

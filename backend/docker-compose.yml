@@ -1,0 +1,15 @@
+version: "3.8"
+services:
+  server:
+    image: .
+    platform: linux/arm64
+    restart: always
+    depends_on:
+      redis-queue-db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - type: bind
+        source: .env
+        target: /mocket/.env

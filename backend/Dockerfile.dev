@@ -1,0 +1,7 @@
+FROM node:18-slim
+WORKDIR /mocket
+COPY package.json /mocket
+COPY package-lock.json /mocket
+RUN npm install
+COPY . /mocket
+CMD ["npm", "run", "dev"]
