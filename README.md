@@ -56,7 +56,7 @@ This project is licensed under the MIT License.
 ## 📬 Contact & Community
 
 <!-- - **Website:** [www.mocket.com](https://www.mocket.com) -->
-- **LinkedIn:** [Mocket](https://www.linkedin.com/company/themocket)
+<!-- - **LinkedIn:** [Mocket](https://www.linkedin.com/company/themocket) -->
 <!-- - **Discord:** [Join Our Community](https://discord.gg/mocket) -->
 
 ---
