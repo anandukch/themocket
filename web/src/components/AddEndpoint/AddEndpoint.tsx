@@ -8,6 +8,7 @@ import ResponseJSON from "./components/ResponseJSON";
 import HeaderComponent from "./components/HeaderComponent";
 import { KeyValuePair, VerbType } from "@/lib/constants/apiRequests.constants";
 import { defaultEndpointMenu } from "@/lib/constants/endpoints.constants";
+import { createMockApi } from "@/axios";
 
 export type MenuType = keyof typeof defaultEndpointMenu;
 const AddEndpoint = () => {
@@ -45,7 +46,7 @@ const AddEndpoint = () => {
   }`);
   // const [headers, setHeaders] = useState<string>("");
   const [headers, setHeaders] = useState<KeyValuePair[]>([
-    { key:"" , value: "" },
+    { key: "", value: "" },
   ]);
 
   const [selectedMenu, setSelectedMenu] = useState<string>("");
@@ -56,10 +57,37 @@ const AddEndpoint = () => {
       setMenus({ ...menus, request: { title: "Request", show: false } });
     } else setMenus(defaultEndpointMenu);
   }, [selectedMenu, verb]);
-  const saveHandler = ()=>{
-    console.log(verb, url,headers,requestBody,responseBody);
-    
-  }
+  const saveHandler = () => {
+    const formattedHeaders: {
+      [key: string]: string;
+    } = {};
+    headers.forEach((header) => {
+      if (header.key && header.value) {
+        formattedHeaders[header.key] = header.value;
+      }
+    });
+    console.log({
+      requestType: verb,
+      endpoint: url,
+      requestHeaders: JSON.stringify(formattedHeaders),
+      requestBody: JSON.parse(requestBody),
+      responseBody: JSON.parse(responseBody),
+    });
+
+    createMockApi({
+      requestType: verb,
+      endpoint: url,
+      requestHeaders: JSON.stringify(formattedHeaders),
+      requestBody: JSON.stringify(requestBody),
+      responseBody: JSON.stringify(responseBody),
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   return (
     <div className="h-full max-h-full w-full flex flex-col gap-4">
       <EndpointInput
@@ -78,9 +106,21 @@ const AddEndpoint = () => {
           selectedMenu={selectedMenu as MenuType}
           setSelectedMenu={setSelectedMenu}
         >
-          {selectedMenu === "request" && <RequestJSON requestBody={requestBody} setRequestBody={setRequestBody} />}
-          {selectedMenu === "header" && <HeaderComponent keyValues={headers} setKeyValues={setHeaders}/>}
-          {selectedMenu === "response" && <ResponseJSON responseBody={responseBody} setResponseBody={setResponseBody}/>}
+          {selectedMenu === "request" && (
+            <RequestJSON
+              requestBody={requestBody}
+              setRequestBody={setRequestBody}
+            />
+          )}
+          {selectedMenu === "header" && (
+            <HeaderComponent keyValues={headers} setKeyValues={setHeaders} />
+          )}
+          {selectedMenu === "response" && (
+            <ResponseJSON
+              responseBody={responseBody}
+              setResponseBody={setResponseBody}
+            />
+          )}
         </EndpointMenuLayout>
       )}
     </div>

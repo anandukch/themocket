@@ -10,6 +10,21 @@ export type EachEndpoint = {
   responseBody?: string; // Response body as a string
 };
 
+export interface MockEndpoint {
+  _id: string;
+  requestType: string;
+  endpoint: string;
+  requestHeaders: string;
+  requestBody: string;
+  responseBody: string;
+  createdBy: string;
+  projectId: string;
+  slugName: string;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+}
+
 export type Endpoint = {
   data: EachEndpoint[];
 };
@@ -271,8 +286,6 @@ export const endpoints: Endpoint = {
           "version": "1.0.0"
         }`,
     },
-    
-    
   ],
 };
 

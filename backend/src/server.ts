@@ -21,6 +21,7 @@ import MocketService from "./services/mocket.service";
 import MocketController from "./controller/mocket.controller";
 import AuthController from "./controller/auth.controller";
 import AuthService from "./services/auth.service";
+import IndexController from "./controller/index.controller";
 
 export default class Server {
   public app: Application;
@@ -96,6 +97,7 @@ export const StartServer = (app: Application, port: number | string) => {
     new UserController(userService),
     new ProjectController(projectService),
     new MocketController(mocketService),
+    new IndexController(mocketService),
   ];
   const globalMiddlewares: RequestHandler[] = [
     express.json(),

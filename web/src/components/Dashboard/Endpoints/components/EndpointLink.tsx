@@ -1,4 +1,4 @@
-import { EachEndpoint } from "@/lib/constants/endpoints.constants";
+import { EachEndpoint, MockEndpoint } from "@/lib/constants/endpoints.constants";
 
 const methodHighlighting: Record<string, string> = {
   GET: "text-blue-400", // Blue for GET
@@ -12,7 +12,7 @@ const methodHighlighting: Record<string, string> = {
   TRACE: "text-teal-400", // Teal for TRACE
 };
 
-const EndpointLink = ({ id, method, description }: EachEndpoint) => (
+const EndpointLink = ({ _id:id, requestType :method,endpoint }: MockEndpoint) => (
   <a
     href={`/dashboard/endpoints/${id}`}
     className="transition-all flex flex-row items-center justify-between px-3 h-[40px] min-h-[40px] hover:bg-purple-950 border border-purple-950 rounded-md"
@@ -24,7 +24,7 @@ const EndpointLink = ({ id, method, description }: EachEndpoint) => (
     >
       {method}
     </div>
-    <div className="text-xs">{description}</div>
+    <div className="text-xs">{endpoint}</div>
   </a>
 );
 

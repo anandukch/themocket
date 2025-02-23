@@ -10,6 +10,9 @@ import { Methods } from "@/controller/controller";
 import { match } from "path-to-regexp";
 import { fakerMappings } from "@/utils/mapping";
 import { CreateMocketDto } from "@/dtos/mocket.dto";
+import { logger } from "@/utils/logger";
+import { mock } from "node:test";
+import { Request } from "express";
 export default class MocketService {
   constructor(
     private mocketRepo: MocketRepository,
@@ -21,13 +24,8 @@ export default class MocketService {
     return this.mocketRepo.findOneById(id);
   }
   public async getMockets(userId: string) {
-    const user = await this.userService.getUserById("67a4de46e93c2afb0fa6dc6d");
-    if (!user) {
-      throw new ErrorHandler(404, "User not found");
-    }
-
     const project = await this.projectService.getUserProjects(userId);
-    return this.mocketRepo.findBy({ createdBy: "67a4de46e93c2afb0fa6dc6d" });
+    return this.mocketRepo.findBy({ createdBy: userId });
   }
   public async createMocket(createMocket: CreateMocketDto, userId: string) {
     let user = await this.userService.getUserById(userId);
@@ -36,9 +34,9 @@ export default class MocketService {
     }
 
     const project = await this.projectService.getProject(createMocket.projectId);
-    if (!project) {
-      throw new ErrorHandler(404, "Project not found");
-    }
+    // if (!project) {
+    //   throw new ErrorHandler(404, "Project not found");
+    // }
 
     // let processedRequestBody: string;
     // if (typeof createMocket.requestBody === "string") {
@@ -48,7 +46,7 @@ export default class MocketService {
     // }
 
     const mocket = await this.mocketRepo.create({
-      projectId: project._id,
+      projectId: project?._id || "6788c32cb027d8ab099734fc",
       endpoint: createMocket.endpoint,
       requestType: createMocket.requestType,
       requestHeaders: JSON.parse(createMocket.requestHeaders as string),
@@ -66,26 +64,26 @@ export default class MocketService {
     };
   }
 
-  public async trigger(
-    method: string,
-    projectId: string,
-    slug: string,
-    requestBody: any,
-    requestHeaders: any,
-    endpoint: string
-  ) {
-    // this.matchEndpoint(endpoint, "");
-    // console.log(projectId, slug, requestBody, requestHeaders, endpoint);
+  private extractFromRequest(req: Request) {
+    const method = req.method as Methods;
+    const endpoint = req.params[0];
+    const projectId = req.params.projectId;
+    const requestBody = req.body;
+    const query = req.query;
+    return { method, endpoint, projectId, requestBody, query };
+  }
+
+  public async trigger(req: Request) {
+    let { method, endpoint, projectId, requestBody, query } = this.extractFromRequest(req);
 
     const project = await this.projectService.getProjectBySubDomain(projectId);
     if (!project) {
       throw new ErrorHandler(404, "Project not found");
     }
-    // add a slash to the endpoint if it doesn't have one
+
     if (!endpoint.startsWith("/")) {
       endpoint = `/${endpoint}`;
     }
-    console.log("endpoint", endpoint);
 
     // with slug filter
     // const matchedMocket = await this.mocketRepo.findOneBy({
@@ -98,34 +96,43 @@ export default class MocketService {
     //   throw new ErrorHandler(404, "Mocket not found");
     // }
 
-    // without slug filter
-    const mocketStream = this.mocketRepo.findByCursor({
-      projectId: new mongoose.Types.ObjectId(project._id as string),
-      requestType: method,
-    });
-
     let matchedMocket: IMocket | null = null;
     let params: Record<string, string> = {};
 
-    for await (const mocket of mocketStream) {
-      const { match, extractedParams } = this.matchEndpoint(endpoint, mocket.endpoint);
-      if (match) {
-        matchedMocket = mocket;
-        params = extractedParams;
-        break;
+    // check if there is a mock exact endpoint
+    const exactMatchedMocket = await this.mocketRepo.findOneBy({
+      projectId: new mongoose.Types.ObjectId(project._id as string),
+      endpoint,
+      requestType: method,
+    });
+
+    console.log("exactMatchedMocket", exactMatchedMocket);
+    if (exactMatchedMocket) {
+      matchedMocket = exactMatchedMocket;
+    } else {
+      const mocketStream = this.mocketRepo.findByCursor({
+        projectId: new mongoose.Types.ObjectId(project._id as string),
+        requestType: method,
+      });
+
+      for await (const mocket of mocketStream) {
+        const { match, extractedParams } = this.matchEndpoint(endpoint, mocket.endpoint);
+        if (match) {
+          matchedMocket = mocket;
+          params = extractedParams;
+          break;
+        }
       }
+      await mocketStream.close();
     }
 
     if (!matchedMocket) {
       throw new ErrorHandler(404, "Mocket not found");
     }
 
-    // end of without slug filter
-
     if (matchedMocket.requestType == Methods.POST || matchedMocket.requestType == Methods.PUT) {
       this.validateRequest(requestBody, matchedMocket.requestBody);
     }
-    // generate mock response
     const responseBody = JSON.parse(matchedMocket.responseBody as string);
 
     return this.generateMockResponse(JSON.parse(responseBody as string));
@@ -220,7 +227,6 @@ export default class MocketService {
 
   private matchEndpoint(endpoint: string, storedEndpoint: string) {
     if (!storedEndpoint) return { match: false, extractedParams: {} };
-
 
     const matcher = match(storedEndpoint);
     const paramRes = matcher(endpoint);
