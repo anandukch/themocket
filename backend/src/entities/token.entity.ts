@@ -1,9 +1,9 @@
 import { sign } from "jsonwebtoken";
 
 export default class Token {
-  key?: string;
-  expiresIn?: string;
-  constructor(init?: Partial<Token>, key?: string, expiresIn?: string) {
+  key: string;
+  expiresIn: string;
+  constructor(init: Partial<Token>, key: string, expiresIn: string) {
     Object.assign(this, init);
     this.key = key;
     this.expiresIn = expiresIn;

@@ -11,6 +11,7 @@ type Props = {
   url: string;
   setUrl?: (url: string) => void;
   onSave?: () => void;
+  link: string;
 };
 
 const EndpointInput = (props: Props) => {
@@ -33,16 +34,15 @@ const EndpointInput = (props: Props) => {
         defaultValue={props.url || ""}
         onChange={(e) => props.setUrl && props.setUrl(e.target.value)}
       />
-      <button className="h-full w-8 flex items-center justify-center rounded-md bg-white/10 hover:bg-white/20 focus:outline-none cursor-pointer px-3" onClick={props.onSave}>
-          <IoSaveOutline size={18} />
-        </button>
-      <a
-          href={props.url || "#"}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-       <FiExternalLink size={20} />
-        </a>
+      <button
+        className="h-full w-8 flex items-center justify-center rounded-md bg-white/10 hover:bg-white/20 focus:outline-none cursor-pointer px-3"
+        onClick={props.onSave}
+      >
+        <IoSaveOutline size={18} />
+      </button>
+      <a href={props.link || "#"} target="_blank" rel="noopener noreferrer">
+        <FiExternalLink size={20} />
+      </a>
     </div>
   );
 };

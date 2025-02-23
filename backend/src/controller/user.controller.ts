@@ -42,13 +42,11 @@ export default class UserController extends Controller {
 
   async getMe(req: RequestWithInfo, res: Response, next: NextFunction) {
     try {
-      console.log("user id", req.user?.userId);
       
       if (!req.user?.userId) {
         throw new Error("User ID is missing");
       }
       const user = await this.service.getUserById(req.user.userId);
-      console.log("getme", user);
       
       res.status(200).json(user);
     } catch (err) {

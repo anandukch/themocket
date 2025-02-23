@@ -21,7 +21,16 @@ export default class MocketService {
   ) {}
 
   public async getMocket(id: string) {
-    return this.mocketRepo.findOneById(id);
+    const mocket = await this.mocketRepo.findOneById(id);
+    if (!mocket?.projectId) {
+      throw new ErrorHandler(404, "Project ID not found");
+    }
+
+    const project = await this.projectService.getProject(mocket.projectId.toString());
+    return {
+      ...mocket.toJSON(),
+      subDomain: project?.subDomain,
+    };
   }
   public async getMockets(userId: string) {
     const project = await this.projectService.getUserProjects(userId);
@@ -106,7 +115,6 @@ export default class MocketService {
       requestType: method,
     });
 
-    console.log("exactMatchedMocket", exactMatchedMocket);
     if (exactMatchedMocket) {
       matchedMocket = exactMatchedMocket;
     } else {

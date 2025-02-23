@@ -47,6 +47,7 @@ const ShowEndpoint = ({ mockEndpoint }: Props) => {
                 setVerb={(v) => setVerb(v)}
                 // defaultVerb="GET"
                 url={mockEndpoint?.endpoint || ""}
+                link = {`http://localhost:5000/${mockEndpoint.subDomain}${mockEndpoint.endpoint}`}
             />
             {selectedMenu !== "" && (
                 <EndpointMenuLayout menus={menus} selectedMenu={selectedMenu as MenuType} setSelectedMenu={setSelectedMenu}>

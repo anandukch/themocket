@@ -63,7 +63,6 @@ export default class MocketController extends Controller {
       const mocket = await this.service.createMocket(req.body as CreateMocketDto, req.user.userId);
       res.status(201).json(mocket);
     } catch (e) {
-      console.log(e);
 
       return next(e);
     }

@@ -23,10 +23,6 @@ const authMiddleware = (type: "access" | "refresh") => {
         const findUser = await userModel.findById(verificationResponse.userId);
 
         if (findUser) {
-          console.log("type", type);
-          
-          console.log("findUser", findUser);
-          
           req.user = verificationResponse;
           next();
         } else {
@@ -36,6 +32,8 @@ const authMiddleware = (type: "access" | "refresh") => {
         next(new ErrorHandler(404, "Authentication token missing"));
       }
     } catch (error) {
+      console.log(type,error);
+
       next(new ErrorHandler(401, "Wrong authentication token"));
     }
   };

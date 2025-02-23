@@ -22,6 +22,7 @@ export interface MockEndpoint {
   slugName: string;
   createdAt: string;
   updatedAt: string;
+  subDomain: string;
   __v: number;
 }
 

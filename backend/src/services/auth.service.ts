@@ -75,8 +75,7 @@ export default class AuthService {
       ACCESS_SECRET,
       ACCESS_EXPIRES
     ).sign();
-    console.log("accessToken", accessToken);
-    
+
     return accessToken;
   }
 }

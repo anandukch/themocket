@@ -9,7 +9,6 @@ const validationMiddleware = (dto: any) => {
       const schema = plainToInstance(dto, req.body);
       const errors = await validate(schema);
       if (errors.length) {
-        console.log(errors);
 
         throw new ValidationException(400, "Validation Failed", errors);
       }

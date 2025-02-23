@@ -16,6 +16,7 @@ const SomeEndpoint = ({ params }: { params: Promise<{ slug: string }> }) => {
             try {
                 const data = await getMockEndpoint(slug);
                 console.log(data);
+                
                 setMock(data);
             } catch (err) {
                 console.error(err);

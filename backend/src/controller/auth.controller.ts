@@ -69,7 +69,6 @@ export default class AuthController extends Controller {
         REFRESH_SECRET,
         REFRESH_EXPIRES
       ).sign();
-      console.log(refreshToken, this.cookieOptions);
 
       res.cookie("refresh", refreshToken, this.cookieOptions);
       res.redirect("http://localhost:3000/dashboard");
@@ -82,7 +81,6 @@ export default class AuthController extends Controller {
 
   async getAccessToken(req: RequestWithInfo, res: Response, next: NextFunction) {
     try {
-      console.log(req.user);
 
       const token = await this.authService.generateAccessToken(req.user?.email as string);
       res.status(200).json({ data: token, message: "login" });
