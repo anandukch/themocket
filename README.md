@@ -16,6 +16,30 @@ Mocket is an **AI-powered mock API platform** designed to help developers test a
 - **Web Extension for API Interception (Planned)** – Modify API responses in real-time directly from the browser.
 - **Seamless Integration** – Works with REST, GraphQL, and WebSockets, making it a versatile tool for developers.
 
+## 🎥 Demo Video
+
+[Watch the demo](https://www.loom.com/share/c4944b8eb8d34c26aa48fe186f502915?sid=11ef95a1-c75b-4adf-8896-23b2afafbfd4)
+
+## 🛠️ Running the Project
+
+### Backend
+```sh
+cd backend
+npm install
+npm run dev
+```
+
+### Frontend
+```sh
+cd frontend
+npm install
+npm run dev
+```
+
+### Environment Variables
+
+Copy `.env.sample` and rename it to `.env` in both the backend and frontend directories. Fill in the required values as needed.
+
 ## 🛠️ Contributing
 
 Contributions are welcome! Please follow these steps:

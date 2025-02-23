@@ -100,15 +100,17 @@ export default class MocketService {
       console.log(dto);
 
       const response = await this.openai.chat.completions.create({
-        model: "gpt-4", // or "gpt-3.5-turbo"
+        model: "gpt-4o-mini", // or "gpt-3.5-turbo"
         messages: [
           { role: "system", content: this.systemPrompt },
           { role: "user", content: dto.prompt },
         ],
-        max_tokens: 100,
+        max_tokens: 500,
       });
 
       const content = response.choices[0].message.content;
+      console.log("AI Response", content);
+      
       if (!content) {
         throw new ErrorHandler(500, "AI response content is null");
       }
