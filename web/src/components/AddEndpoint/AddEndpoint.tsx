@@ -8,7 +8,8 @@ import ResponseJSON from "./components/ResponseJSON";
 import HeaderComponent from "./components/HeaderComponent";
 import { KeyValuePair, VerbType } from "@/lib/constants/apiRequests.constants";
 import { defaultEndpointMenu } from "@/lib/constants/endpoints.constants";
-import { createMockApi } from "@/axios";
+import { createMockAiApi, createMockApi } from "@/axios";
+import { errorToast, infoToast } from "@/utils/toastSettings";
 
 export type MenuType = keyof typeof defaultEndpointMenu;
 const AddEndpoint = () => {
@@ -88,6 +89,27 @@ const AddEndpoint = () => {
         console.log(err);
       });
   };
+
+  const [aiButton, setAiButton] = useState(false);
+
+  const [prompt, setPrompt] = useState<string>("");
+  const [loading, setLoading] = useState(false);
+  const aiClickHandler = () => {
+    setLoading(true);
+    createMockAiApi({
+      prompt: prompt,
+      projectId: "1",
+    })
+      .then((res) => {
+        console.log(res);
+        setLoading(false);
+        infoToast("AI Generated Data");
+      })
+      .catch((err) => {
+        console.log(err);
+        errorToast(err.response.data.message);
+      });
+  };
   return (
     <div className="h-full max-h-full w-full flex flex-col gap-4">
       <EndpointInput
@@ -100,6 +122,40 @@ const AddEndpoint = () => {
         setUrl={setUrl}
         onSave={saveHandler} // Add this line
       />
+
+      {/* add genarte with ai button */}
+
+      <button
+        className="w-40 h-10 bg-blue-500 text-white rounded-md"
+        onClick={() => {
+          setAiButton((prev) => !prev);
+        }}
+      >
+        Generate with AI
+      </button>
+      {loading && (
+        <div className="w-full h-40 bg-gray-500 p-4 rounded-lg flex flex-col gap-3">
+          <p className="text-white font-semibold">Loading...</p>
+        </div>
+      )}
+
+      {aiButton && (
+        <div className="w-full h-40 bg-gray-500 p-4 rounded-lg flex flex-col gap-3">
+          <p className="text-white font-semibold">AI Generated Data</p>
+          <input
+            type="text"
+            placeholder="Enter your prompt..."
+            className="p-2 rounded bg-gray-700 text-white placeholder-gray-400 border border-gray-600"
+            onChange={(e) => setPrompt(e.target.value)}
+          />
+          <button
+            className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
+            onClick={aiClickHandler}
+          >
+            Generate
+          </button>
+        </div>
+      )}
       {selectedMenu !== "" && (
         <EndpointMenuLayout
           menus={menus}

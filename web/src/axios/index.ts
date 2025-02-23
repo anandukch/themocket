@@ -76,6 +76,13 @@ export const createMockApi = async (data: any) => {
   return res.data;
 };
 
+export const createMockAiApi = async (data: any) => {
+  console.log(data);
+
+  const res = await api.post("/mockets/ai", data);
+  return res.data;
+};
+
 export const getMockApi = async () => {
   const res = await api.get("/mockets");
   return res.data;
