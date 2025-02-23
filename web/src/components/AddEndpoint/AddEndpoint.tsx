@@ -121,6 +121,7 @@ const AddEndpoint = () => {
         url={url}
         setUrl={setUrl}
         onSave={saveHandler} // Add this line
+        link={url}
       />
 
       {/* add genarte with ai button */}
