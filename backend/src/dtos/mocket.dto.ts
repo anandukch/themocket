@@ -1,10 +1,6 @@
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class CreateMocketDto {
-  @IsString()
-  @IsNotEmpty()
-  projectId!: string;
-
+export class MocketDto {
   @IsString()
   @IsNotEmpty()
   requestType!: string;
@@ -24,4 +20,15 @@ export class CreateMocketDto {
   @IsString()
   @IsNotEmpty()
   responseBody!: string | Record<string, string> | Object;
+}
+export class CreateMocketDto extends MocketDto {
+  @IsString()
+  @IsNotEmpty()
+  projectId!: string;
+}
+
+
+export class CreateMocketAiDto {
+  prompt!: string;
+  projectId!: string;
 }

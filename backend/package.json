@@ -27,6 +27,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.4",
     "nanoid": "^5.0.9",
+    "openai": "^4.85.4",
     "path-to-regexp": "^8.2.0",
     "punycode": "^2.3.1",
     "reflect-metadata": "^0.2.2",

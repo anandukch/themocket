@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import Controller, { IRoute, Methods } from "./controller";
 import MocketService from "@/services/mocket.service";
-import { CreateMocketDto } from "@/dtos/mocket.dto";
+import { CreateMocketAiDto, CreateMocketDto } from "@/dtos/mocket.dto";
 import { RequestWithInfo } from "@/interfaces/requestWithRole";
 import authMiddleware from "@/middlewares/authMiddleware";
 
@@ -17,6 +17,12 @@ export default class MocketController extends Controller {
       path: "/",
       method: Methods.GET,
       handler: this.getAll.bind(this),
+      localMiddleWares: [authMiddleware("access")],
+    },
+    {
+      path: "/ai",
+      method: Methods.POST,
+      handler: this.createAI.bind(this),
       localMiddleWares: [authMiddleware("access")],
     },
     {
@@ -63,7 +69,21 @@ export default class MocketController extends Controller {
       const mocket = await this.service.createMocket(req.body as CreateMocketDto, req.user.userId);
       res.status(201).json(mocket);
     } catch (e) {
+      return next(e);
+    }
+  }
 
+  async createAI(req: RequestWithInfo, res: Response, next: NextFunction) {
+    try {
+      if (!req.user?.userId) {
+        return next(new Error("User not found"));
+      }
+      const mocket = await this.service.createMocketWithAi(
+        req.body as CreateMocketAiDto,
+        req.user?.userId
+      );
+      res.status(201).json(mocket);
+    } catch (e) {
       return next(e);
     }
   }

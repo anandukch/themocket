@@ -9,11 +9,32 @@ import Chance from "chance";
 import { Methods } from "@/controller/controller";
 import { match } from "path-to-regexp";
 import { fakerMappings } from "@/utils/mapping";
-import { CreateMocketDto } from "@/dtos/mocket.dto";
-import { logger } from "@/utils/logger";
-import { mock } from "node:test";
+import { CreateMocketAiDto, CreateMocketDto, MocketDto } from "@/dtos/mocket.dto";
+import OpenAI from "openai";
 import { Request } from "express";
+import { OPENAI_API_KEY } from "@/utils/variables";
 export default class MocketService {
+  private openai = new OpenAI({
+    apiKey: OPENAI_API_KEY,
+  });
+
+  private systemPrompt = `You are an API generation assistant. Your task is to create mock API definitions based on user prompts.  
+
+  **Response Format (JSON):**  
+  The output should be a JSON object:
+  
+  Given below is an example of a mock API definition:
+  
+  {
+    "requestType": "GET",
+    "endpoint": "/demo",
+    "requestHeaders": "{\\n  \\\"Content-Type\\\": \\\"application/json\\\"\\n}",
+    "requestBody": "\"{\\n  \\\"name\\\": \\\"John Doe\\\",\\n  \\\"email\\\": \\\"johndoe@example.com\\\",\\n  \\\"age\\\": 30,\\n  \\\"address\\\": {\\n    \\\"street\\\": \\\"123 Main St\\\",\\n    \\\"city\\\": \\\"New York\\\",\\n    \\\"zip\\\": \\\"10001\\\"\\n  },\\n  \\\"hobbies\\\": [\\\"reading\\\", \\\"gaming\\\", \\\"traveling\\\"]\\n}\\n\"",
+    "responseBody": "\"{\\n    \\\"status\\\": \\\"success\\\"\\n  }\""
+}
+  Manage the fields accordingly as per the user prompt.
+
+`;
   constructor(
     private mocketRepo: MocketRepository,
     private userService: UserService,
@@ -71,6 +92,50 @@ export default class MocketService {
       slugName: mocket.slugName,
       // subDomain: project.subDomain,
     };
+  }
+
+  public async createMocketWithAi(dto: CreateMocketAiDto, userId: string) {
+    try {
+      // const project = await this.projectService.getProject(dto.projectId);
+      console.log(dto);
+
+      const response = await this.openai.chat.completions.create({
+        model: "gpt-4", // or "gpt-3.5-turbo"
+        messages: [
+          { role: "system", content: this.systemPrompt },
+          { role: "user", content: dto.prompt },
+        ],
+        max_tokens: 100,
+      });
+
+      const content = response.choices[0].message.content;
+      if (!content) {
+        throw new ErrorHandler(500, "AI response content is null");
+      }
+
+      const aiMocket = JSON.parse(content) as MocketDto;
+      console.log("AI Mocket", aiMocket);
+
+      const mocket = await this.mocketRepo.create({
+        projectId: new mongoose.Types.ObjectId("6788c32cb027d8ab099734fc"),
+        endpoint: aiMocket.endpoint,
+        requestType: aiMocket.requestType,
+        requestHeaders: JSON.parse(aiMocket.requestHeaders as string),
+        requestBody: aiMocket.requestBody,
+        responseBody: aiMocket.responseBody,
+        createdBy: userId,
+        slugName: generateUniqueMocketString(),
+      } as IMocket);
+
+      return {
+        mocketId: mocket._id,
+        requestType: mocket.requestType,
+        slugName: mocket.slugName,
+        // subDomain: project.subDomain,
+      };
+    } catch (error) {
+      console.error("Error:", error);
+    }
   }
 
   private extractFromRequest(req: Request) {

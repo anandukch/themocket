@@ -12,6 +12,7 @@ const {
   REFRESH_EXPIRES = "",
   ACCESS_SECRET = "",
   ACCESS_EXPIRES = "",
+  OPENAI_API_KEY = "",
 } = process.env;
 
 export {
@@ -28,4 +29,5 @@ export {
   REFRESH_EXPIRES,
   ACCESS_SECRET,
   ACCESS_EXPIRES,
+  OPENAI_API_KEY
 };
