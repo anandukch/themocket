@@ -5,28 +5,26 @@ import { MockEndpoint } from "@/lib/constants/endpoints.constants";
 import { useEffect, useState, use } from "react";
 
 const SomeEndpoint = ({ params }: { params: Promise<{ slug: string }> }) => {
-    const { slug } = use(params); // ✅ Unwrapping the Promise using use()
+  const { slug } = use(params);
+  console.log(slug);
 
-    console.log(slug);
+  const [mock, setMock] = useState<MockEndpoint | null>(null);
 
-    const [mock, setMock] = useState<MockEndpoint | null>(null);
+  useEffect(() => {
+    const fetchMockEndpoint = async () => {
+      try {
+        const data = await getMockEndpoint(slug);
 
-    useEffect(() => {
-        const fetchMockEndpoint = async () => {
-            try {
-                const data = await getMockEndpoint(slug);
-                console.log(data);
-                
-                setMock(data);
-            } catch (err) {
-                console.error(err);
-            }
-        };
+        setMock(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-        fetchMockEndpoint();
-    }, [slug]);
+    fetchMockEndpoint();
+  }, [slug]);
 
-    return <>{mock ? <ShowEndpoint mockEndpoint={mock} /> : <p>Loading...</p>}</>;
+  return <>{mock ? <ShowEndpoint mockEndpoint={mock} /> : <p>Loading...</p>}</>;
 };
 
 export default SomeEndpoint;

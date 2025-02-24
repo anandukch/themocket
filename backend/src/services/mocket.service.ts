@@ -9,8 +9,11 @@ import Chance from "chance";
 import { Methods } from "@/controller/controller";
 import { match } from "path-to-regexp";
 import { fakerMappings } from "@/utils/mapping";
-import { CreateMocketAiDto, CreateMocketDto, MocketDto } from "@/dtos/mocket.dto";
+import { CreateMocketAiDto, CreateMocketDto, MocketDto, ZodMocketSchema } from "@/dtos/mocket.dto";
 import OpenAI from "openai";
+import { zodResponseFormat } from "openai/helpers/zod";
+import { z } from "zod";
+
 import { Request } from "express";
 import { OPENAI_API_KEY } from "@/utils/variables";
 export default class MocketService {
@@ -33,6 +36,7 @@ export default class MocketService {
     "responseBody": "\"{\\n    \\\"status\\\": \\\"success\\\"\\n  }\""
 }
   Manage the fields accordingly as per the user prompt.
+  Generate the request header , request body and response body in a single line string without any + symbol only contain "\n" for new line.
 
 `;
   constructor(
@@ -97,37 +101,31 @@ export default class MocketService {
   public async createMocketWithAi(dto: CreateMocketAiDto, userId: string) {
     // const project = await this.projectService.getProject(dto.projectId);
 
-    const response = await this.openai.chat.completions.create({
+    const response = await this.openai.beta.chat.completions.parse({
       model: "gpt-4o-mini", // or "gpt-3.5-turbo"
       messages: [
         { role: "system", content: this.systemPrompt },
         { role: "user", content: dto.prompt },
       ],
-      max_tokens: 500,
+      response_format: zodResponseFormat(ZodMocketSchema, "mocket"),
     });
 
-    const content = response.choices[0].message.content;
-    console.log("AI Response", content);
-
-    if (!content) {
+    const aiMocket = response.choices[0].message.parsed;
+    console.log("AI Response", aiMocket);
+    if (!aiMocket) {
       throw new ErrorHandler(500, "AI response content is null");
     }
 
-    const aiMocket = JSON.parse(content) as MocketDto | any;
-    console.log("AI Mocket", aiMocket);
-    if (aiMocket.error) {
-      throw new ErrorHandler(500, aiMocket.error);
-    }
     const mocket = await this.mocketRepo.create({
       projectId: new mongoose.Types.ObjectId("6788c32cb027d8ab099734fc"),
       endpoint: aiMocket.endpoint,
       requestType: aiMocket.requestType,
-      requestHeaders: JSON.parse(aiMocket.requestHeaders as string),
-      requestBody: aiMocket.requestBody,
-      responseBody: aiMocket.responseBody,
+      requestHeaders: JSON.parse(aiMocket.requestHeaders),
+      requestBody: JSON.stringify(aiMocket.requestBody),
+      responseBody: JSON.stringify(aiMocket.responseBody),
       createdBy: userId,
       slugName: generateUniqueMocketString(),
-    } as IMocket);
+    } as unknown as IMocket);
 
     return {
       mocketId: mocket._id,

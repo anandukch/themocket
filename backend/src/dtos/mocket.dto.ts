@@ -32,3 +32,15 @@ export class CreateMocketAiDto {
   prompt!: string;
   projectId!: string;
 }
+
+import { z } from "zod";
+
+export const ZodMocketSchema = z.object({
+  requestType: z.string(),
+  endpoint: z.string(),
+  requestHeaders: z.string(),
+  requestBody: z.string(),
+  responseBody: z.string(),
+});
+
+// export type MocketDto = z.infer<typeof MocketSchema>;

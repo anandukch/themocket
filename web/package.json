@@ -11,6 +11,7 @@
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",
     "@lezer/highlight": "^1.2.1",
+    "@reduxjs/toolkit": "^2.6.0",
     "@uiw/codemirror-themes": "^4.23.8",
     "@uiw/react-codemirror": "^4.23.8",
     "@xyflow/react": "^12.4.3",
@@ -20,6 +21,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",
+    "react-redux": "^9.2.0",
     "react-toastify": "^11.0.3"
   },
   "devDependencies": {

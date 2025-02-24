@@ -60,6 +60,7 @@ const AddEndpoint = () => {
       setMenus({ ...menus, request: { title: "Request", show: false } });
     } else setMenus(defaultEndpointMenu);
   }, [selectedMenu, verb]);
+
   const saveHandler = () => {
     const formattedHeaders: {
       [key: string]: string;
@@ -79,12 +80,13 @@ const AddEndpoint = () => {
     })
       .then((res) => {
         infoToast("Endpoint Created");
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
         errorToast(err.response.data);
       });
-    setLoading(false);
+    // setLoading(false);
   };
 
   const [aiButton, setAiButton] = useState(false);
@@ -96,14 +98,10 @@ const AddEndpoint = () => {
       prompt: prompt,
       projectId: "1",
     })
-      .then(({ status, data,}) => {
-        console.log(data);
-        
-        if (status != 200) {
-          errorToast(data.message);
-          return;
-        }
-        setResponseBody(JSON.stringify(data, null, 2));
+      .then((res) => {
+        console.log(res);
+
+        setResponseBody(JSON.stringify(res, null, 2));
         setLoading(false);
         infoToast("AI Generated Data");
       })
@@ -111,8 +109,9 @@ const AddEndpoint = () => {
         console.log(err);
         errorToast(err.response.data.message);
       });
-    setLoading(false);
+    // setLoading(false);
   };
+  if (loading) return <Loader />;
   return (
     <div className="h-full max-h-full w-full flex flex-col gap-4">
       <EndpointInput
@@ -137,7 +136,6 @@ const AddEndpoint = () => {
       >
         Generate with AI
       </button>
-      {loading && <Loader />}
 
       {aiButton && (
         <div className="w-full h-40 bg-gray-500 p-4 rounded-lg flex flex-col gap-3">
