@@ -9,6 +9,7 @@ import { MenuType } from "../AddEndpoint/AddEndpoint";
 import RequestJSON from "../AddEndpoint/components/RequestJSON";
 import HeaderComponent from "../AddEndpoint/components/HeaderComponent";
 import ResponseJSON from "../AddEndpoint/components/ResponseJSON";
+import { SERVER_URL } from "@/utils/loadEnv";
 
 type Props = {
     mockEndpoint: MockEndpoint;
@@ -47,7 +48,7 @@ const ShowEndpoint = ({ mockEndpoint }: Props) => {
                 setVerb={(v) => setVerb(v)}
                 // defaultVerb="GET"
                 url={mockEndpoint?.endpoint || ""}
-                link = {`http://localhost:5000/${mockEndpoint.subDomain}${mockEndpoint.endpoint}`}
+                link = {`${process.env.NEXT_PUBLIC_API_URL}/${mockEndpoint.subDomain}${mockEndpoint.endpoint}`}
             />
             {selectedMenu !== "" && (
                 <EndpointMenuLayout menus={menus} selectedMenu={selectedMenu as MenuType} setSelectedMenu={setSelectedMenu}>

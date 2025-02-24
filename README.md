@@ -40,6 +40,9 @@ npm run dev
 
 Copy `.env.sample` and rename it to `.env` in both the backend and frontend directories. Fill in the required values as needed.
 
+Also need to configure google console and setup credentails and redirect uri.
+THe redirect uri endpoinbt will be /auth/callback
+
 ## 🛠️ Contributing
 
 Contributions are welcome! Please follow these steps:

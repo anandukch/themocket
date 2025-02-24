@@ -1,3 +1,4 @@
+import { SERVER_URL } from "@/utils/loadEnv";
 import axios, {
   AxiosInstance,
   AxiosResponse,
@@ -5,8 +6,10 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 const api: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
+  baseURL: BASE_URL,
   // baseURL: "http://localhost:5001",
   timeout: 10000,
   headers: {

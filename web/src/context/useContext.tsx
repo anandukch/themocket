@@ -1,6 +1,7 @@
 "use client";
 
 import { setHead, verifyToken, apiUserData, logout } from "@/axios";
+import { SERVER_URL } from "@/utils/loadEnv";
 import { errorToast, infoToast, successToast } from "@/utils/toastSettings";
 // import { userDetailsType } from "@/types/ContextTypesUser";
 import {
@@ -43,7 +44,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       const res = await verifyToken();
       console.log("fetch token", res);
-      
+
       if (res.status === 200) {
         setToken(res.data.data);
         setHead(res.data.data);
@@ -58,7 +59,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       setLoading(true);
       const res = await apiUserData();
-      
+
       if (res.status === 200) {
         setUserDetails(res.data.data);
       }
@@ -72,7 +73,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // redirect to google auth
   const handleAuthentication = async () => {
     if (typeof window === "undefined") return;
-    window.location.href = `http://localhost:5000/auth/google`;
+    
+    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
   };
 
   const fetchUserDetails = async () => {
