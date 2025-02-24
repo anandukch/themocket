@@ -13,12 +13,12 @@ export default function Home() {
   }, [userDetails]);
 
   // if nort authenticaeted redirect to login
-  // if (loading) return <div>Loading...</div>;
-  // if (authenticated) {
-  //   redirect("/dashboard");
-  // } else {
-  //   redirect("/auth");
-  // }
+  if (loading) return <div>Loading...</div>;
+  if (authenticated) {
+    redirect("/dashboard");
+  } else {
+    redirect("/auth");
+  }
   return (
     <>
       <EdgeTypesFlow />
