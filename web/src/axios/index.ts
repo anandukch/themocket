@@ -79,22 +79,14 @@ export const createMockApi = async (data: any) => {
   return res.data;
 };
 
-export const createMockAiApi = async (data: any) => {
-  console.log(data);
-
-  const res = await api.post("/mockets/ai", data);
-  return res.data;
-};
+export const createMockAiApi = (data: any) => api.post("/mockets/ai", data);
 
 export const getMockApi = async () => {
   const res = await api.get("/mockets");
   return res.data;
 };
 
-export const getMockEndpoint = async (id: string) => {
-  const res = await api.get(`/mockets/${id}`);
-  return res.data;
-}
-
+export const getMockEndpoint = async (id: string) =>
+  (await api.get(`/mockets/${id}`)).data;
 
 export default api;

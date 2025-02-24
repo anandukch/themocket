@@ -10,6 +10,7 @@ import { KeyValuePair, VerbType } from "@/lib/constants/apiRequests.constants";
 import { defaultEndpointMenu } from "@/lib/constants/endpoints.constants";
 import { createMockAiApi, createMockApi } from "@/axios";
 import { errorToast, infoToast } from "@/utils/toastSettings";
+import Loader from "../Loader";
 
 export type MenuType = keyof typeof defaultEndpointMenu;
 const AddEndpoint = () => {
@@ -51,6 +52,7 @@ const AddEndpoint = () => {
   ]);
 
   const [selectedMenu, setSelectedMenu] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (["GET", "DELETE"].includes(verb)) {
@@ -67,14 +69,7 @@ const AddEndpoint = () => {
         formattedHeaders[header.key] = header.value;
       }
     });
-    console.log({
-      requestType: verb,
-      endpoint: url,
-      requestHeaders: JSON.stringify(formattedHeaders),
-      requestBody: JSON.parse(requestBody),
-      responseBody: JSON.parse(responseBody),
-    });
-
+    setLoading(true);
     createMockApi({
       requestType: verb,
       endpoint: url,
@@ -83,25 +78,32 @@ const AddEndpoint = () => {
       responseBody: JSON.stringify(responseBody),
     })
       .then((res) => {
-        console.log(res);
+        infoToast("Endpoint Created");
       })
       .catch((err) => {
         console.log(err);
+        errorToast(err.response.data);
       });
+    setLoading(false);
   };
 
   const [aiButton, setAiButton] = useState(false);
 
   const [prompt, setPrompt] = useState<string>("");
-  const [loading, setLoading] = useState(false);
   const aiClickHandler = () => {
     setLoading(true);
     createMockAiApi({
       prompt: prompt,
       projectId: "1",
     })
-      .then((res) => {
-        console.log(res);
+      .then(({ status, data,}) => {
+        console.log(data);
+        
+        if (status != 200) {
+          errorToast(data.message);
+          return;
+        }
+        setResponseBody(JSON.stringify(data, null, 2));
         setLoading(false);
         infoToast("AI Generated Data");
       })
@@ -109,6 +111,7 @@ const AddEndpoint = () => {
         console.log(err);
         errorToast(err.response.data.message);
       });
+    setLoading(false);
   };
   return (
     <div className="h-full max-h-full w-full flex flex-col gap-4">
@@ -134,11 +137,7 @@ const AddEndpoint = () => {
       >
         Generate with AI
       </button>
-      {loading && (
-        <div className="w-full h-40 bg-gray-500 p-4 rounded-lg flex flex-col gap-3">
-          <p className="text-white font-semibold">Loading...</p>
-        </div>
-      )}
+      {loading && <Loader />}
 
       {aiButton && (
         <div className="w-full h-40 bg-gray-500 p-4 rounded-lg flex flex-col gap-3">

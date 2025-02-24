@@ -84,6 +84,8 @@ export default class MocketController extends Controller {
       );
       res.status(201).json(mocket);
     } catch (e) {
+      console.log(e);
+      
       return next(e);
     }
   }

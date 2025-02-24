@@ -95,49 +95,46 @@ export default class MocketService {
   }
 
   public async createMocketWithAi(dto: CreateMocketAiDto, userId: string) {
-    try {
-      // const project = await this.projectService.getProject(dto.projectId);
-      console.log(dto);
+    // const project = await this.projectService.getProject(dto.projectId);
 
-      const response = await this.openai.chat.completions.create({
-        model: "gpt-4o-mini", // or "gpt-3.5-turbo"
-        messages: [
-          { role: "system", content: this.systemPrompt },
-          { role: "user", content: dto.prompt },
-        ],
-        max_tokens: 500,
-      });
+    const response = await this.openai.chat.completions.create({
+      model: "gpt-4o-mini", // or "gpt-3.5-turbo"
+      messages: [
+        { role: "system", content: this.systemPrompt },
+        { role: "user", content: dto.prompt },
+      ],
+      max_tokens: 500,
+    });
 
-      const content = response.choices[0].message.content;
-      console.log("AI Response", content);
-      
-      if (!content) {
-        throw new ErrorHandler(500, "AI response content is null");
-      }
+    const content = response.choices[0].message.content;
+    console.log("AI Response", content);
 
-      const aiMocket = JSON.parse(content) as MocketDto;
-      console.log("AI Mocket", aiMocket);
-
-      const mocket = await this.mocketRepo.create({
-        projectId: new mongoose.Types.ObjectId("6788c32cb027d8ab099734fc"),
-        endpoint: aiMocket.endpoint,
-        requestType: aiMocket.requestType,
-        requestHeaders: JSON.parse(aiMocket.requestHeaders as string),
-        requestBody: aiMocket.requestBody,
-        responseBody: aiMocket.responseBody,
-        createdBy: userId,
-        slugName: generateUniqueMocketString(),
-      } as IMocket);
-
-      return {
-        mocketId: mocket._id,
-        requestType: mocket.requestType,
-        slugName: mocket.slugName,
-        // subDomain: project.subDomain,
-      };
-    } catch (error) {
-      console.error("Error:", error);
+    if (!content) {
+      throw new ErrorHandler(500, "AI response content is null");
     }
+
+    const aiMocket = JSON.parse(content) as MocketDto | any;
+    console.log("AI Mocket", aiMocket);
+    if (aiMocket.error) {
+      throw new ErrorHandler(500, aiMocket.error);
+    }
+    const mocket = await this.mocketRepo.create({
+      projectId: new mongoose.Types.ObjectId("6788c32cb027d8ab099734fc"),
+      endpoint: aiMocket.endpoint,
+      requestType: aiMocket.requestType,
+      requestHeaders: JSON.parse(aiMocket.requestHeaders as string),
+      requestBody: aiMocket.requestBody,
+      responseBody: aiMocket.responseBody,
+      createdBy: userId,
+      slugName: generateUniqueMocketString(),
+    } as IMocket);
+
+    return {
+      mocketId: mocket._id,
+      requestType: mocket.requestType,
+      slugName: mocket.slugName,
+      // subDomain: project.subDomain,
+    };
   }
 
   private extractFromRequest(req: Request) {
