@@ -37,6 +37,8 @@ export default class MocketService {
 }
   Manage the fields accordingly as per the user prompt.
   Generate the request header , request body and response body in a single line string without any + symbol only contain "\n" for new line.
+  If the intend is to returna list of items, please return an array of objects with lenth 2.
+  Construct under 300 tokens.
 
 `;
   constructor(
@@ -107,7 +109,7 @@ export default class MocketService {
         { role: "system", content: this.systemPrompt },
         { role: "user", content: dto.prompt },
       ],
-      response_format: zodResponseFormat(ZodMocketSchema, "mocket"),
+      response_format: zodResponseFormat(ZodMocketSchema, "mocket")
     });
 
     const aiMocket = response.choices[0].message.parsed;

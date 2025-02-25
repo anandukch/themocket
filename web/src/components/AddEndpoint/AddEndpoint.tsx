@@ -8,12 +8,18 @@ import ResponseJSON from "./components/ResponseJSON";
 import HeaderComponent from "./components/HeaderComponent";
 import { KeyValuePair, VerbType } from "@/lib/constants/apiRequests.constants";
 import { defaultEndpointMenu } from "@/lib/constants/endpoints.constants";
-import { createMockAiApi, createMockApi } from "@/axios";
 import { errorToast, infoToast } from "@/utils/toastSettings";
 import Loader from "../Loader";
+import {
+  useCreateMockAiApiMutation,
+  useCreateMockApiMutation,
+} from "@/apis/mocket";
 
 export type MenuType = keyof typeof defaultEndpointMenu;
 const AddEndpoint = () => {
+  const [createMockApi, { isLoading }] = useCreateMockApiMutation();
+  const [createMockAiApi, { isLoading: aiLoading }] =
+    useCreateMockAiApiMutation();
   const [menus, setMenus] = useState(defaultEndpointMenu);
   const [verb, setVerb] = useState<string>("GET");
   const [url, setUrl] = useState<string>("");
@@ -52,7 +58,6 @@ const AddEndpoint = () => {
   ]);
 
   const [selectedMenu, setSelectedMenu] = useState<string>("");
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (["GET", "DELETE"].includes(verb)) {
@@ -61,7 +66,7 @@ const AddEndpoint = () => {
     } else setMenus(defaultEndpointMenu);
   }, [selectedMenu, verb]);
 
-  const saveHandler = () => {
+  const saveHandler = async () => {
     const formattedHeaders: {
       [key: string]: string;
     } = {};
@@ -70,63 +75,37 @@ const AddEndpoint = () => {
         formattedHeaders[header.key] = header.value;
       }
     });
-    setLoading(true);
-    createMockApi({
+
+    await createMockApi({
       requestType: verb,
       endpoint: url,
       requestHeaders: JSON.stringify(formattedHeaders),
       requestBody: JSON.stringify(requestBody),
       responseBody: JSON.stringify(responseBody),
-    })
-      .then((res) => {
-        infoToast("Endpoint Created");
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        errorToast(err.response.data);
-      });
-    // setLoading(false);
+    });
   };
 
   const [aiButton, setAiButton] = useState(false);
 
   const [prompt, setPrompt] = useState<string>("");
-  const aiClickHandler = () => {
-    setLoading(true);
-    createMockAiApi({
+  const aiClickHandler = async () => {
+    await createMockAiApi({
       prompt: prompt,
       projectId: "1",
-    })
-      .then((res) => {
-        console.log(res);
-
-        setResponseBody(JSON.stringify(res, null, 2));
-        setLoading(false);
-        infoToast("AI Generated Data");
-      })
-      .catch((err) => {
-        console.log(err);
-        errorToast(err.response.data.message);
-      });
-    // setLoading(false);
+    });
   };
-  if (loading) return <Loader />;
   return (
     <div className="h-full max-h-full w-full flex flex-col gap-4">
+      {(isLoading || aiLoading) && <Loader />}
       <EndpointInput
         verb={verb as VerbType}
         setVerb={(v) => setVerb(v)}
-        // defaultVerb="GET"
-        // defaultUrl=""
-
         url={url}
         setUrl={setUrl}
-        onSave={saveHandler} // Add this line
+        onSave={saveHandler} 
         link={url}
       />
 
-      {/* add genarte with ai button */}
 
       <button
         className="w-40 h-10 bg-blue-500 text-white rounded-md"

@@ -12,12 +12,15 @@ const authMiddleware = (type: "access" | "refresh") => {
         ? req.header("Authorization")?.split("Bearer ")[1] || null
         : null;
 
-      const Authorization = type === "access" ? accessHeaders : req.cookies["refresh"];
-
+      // const Authorization = type === "access" ? accessHeaders : req.cookies["refresh"];
+      const Authorization = req.cookies["refresh"];
+      console.log("authMiddleware", Authorization);
+      
       if (Authorization) {
         const verificationResponse = verify(
           Authorization,
-          type === "refresh" ? REFRESH_SECRET : ACCESS_SECRET
+          // type === "refresh" ? REFRESH_SECRET : ACCESS_SECRET
+          REFRESH_SECRET
         ) as unknown as DataStoredInToken;
 
         const findUser = await userModel.findById(verificationResponse.userId);
@@ -32,7 +35,7 @@ const authMiddleware = (type: "access" | "refresh") => {
         next(new ErrorHandler(404, "Authentication token missing"));
       }
     } catch (error) {
-      console.log(type,error);
+      console.log(type, error);
 
       next(new ErrorHandler(401, "Wrong authentication token"));
     }

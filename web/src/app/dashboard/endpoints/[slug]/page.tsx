@@ -1,30 +1,25 @@
 "use client";
-import { getMockEndpoint } from "@/axios";
+import { useGetMocketQuery, useLazyGetMocketQuery } from "@/apis/mocket";
+import Loader from "@/components/Loader";
 import ShowEndpoint from "@/components/ShowEndpoint/ShowEndpoint";
 import { MockEndpoint } from "@/lib/constants/endpoints.constants";
-import { useEffect, useState, use } from "react";
+import { errorToast } from "@/utils/toastSettings";
+import { use } from "react";
 
 const SomeEndpoint = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
-  console.log(slug);
 
-  const [mock, setMock] = useState<MockEndpoint | null>(null);
+  const { data: mock, isLoading, isError, error } = useGetMocketQuery(slug);
+  if (isError) {
+    errorToast(JSON.stringify(error));
+  }
 
-  useEffect(() => {
-    const fetchMockEndpoint = async () => {
-      try {
-        const data = await getMockEndpoint(slug);
-
-        setMock(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchMockEndpoint();
-  }, [slug]);
-
-  return <>{mock ? <ShowEndpoint mockEndpoint={mock} /> : <p>Loading...</p>}</>;
+  return (
+    <>
+      {isLoading && <Loader />}
+      {mock ? <ShowEndpoint mockEndpoint={mock} /> : <p>Loading...</p>}
+    </>
+  );
 };
 
 export default SomeEndpoint;

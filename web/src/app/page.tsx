@@ -1,26 +1,19 @@
 "use client";
+import { useGetProfileQuery } from "@/apis/authApi";
+import Loader from "@/components/Loader";
 import EdgeTypesFlow from "@/components/Workflow/WorkflowBuilder";
-import { useUserContext } from "@/context/useContext";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Home() {
-  const { authenticated, fetchUserDetails, userDetails, loading } =
-    useUserContext();
-
-  useEffect(() => {
-    if (!userDetails) fetchUserDetails();
-  }, [userDetails]);
-
-  // if nort authenticaeted redirect to login
-  if (loading) return <div>Loading...</div>;
-  if (authenticated) {
-    redirect("/dashboard");
-  } else {
+  const { isLoading, isError } = useGetProfileQuery({});
+  if (isError) {
     redirect("/auth");
   }
+
   return (
     <>
+      {isLoading && <Loader />}
       <EdgeTypesFlow />
     </>
   );
